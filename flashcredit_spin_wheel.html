@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlashCredit Spin Wheel</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+            font-family: Arial, sans-serif;
+        }
+        .wheel-container {
+            position: relative;
+        }
+        .pointer {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 20px;
+            background-color: red;
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+        }
+        .spin-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="wheel-container">
+        <div class="pointer"></div>
+        <canvas id="wheelCanvas" width="300" height="300"></canvas>
+        <button class="spin-button" onclick="spinWheel()">Spin</button>
+    </div>
+    <script>
+        const canvas = document.getElementById("wheelCanvas");
+        const ctx = canvas.getContext("2d");
+        const sections = ["21 Days Loan", "31 Days Loan", "60 Days Loan", "Temu Voucher", "2GB Data", "Viva Cinema Ticket", "7% Discount Coupon"];
+        const colors = ["#FF5733", "#FFC300", "#28A745", "#17A2B8", "#6610F2", "#DC3545", "#FF8C00"];
+        let rotation = 0;
+        let currentAngle = 0;
+
+        function drawWheel() {
+            const arc = (2 * Math.PI) / sections.length;
+            for (let i = 0; i < sections.length; i++) {
+                ctx.beginPath();
+                ctx.fillStyle = colors[i];
+                ctx.moveTo(150, 150);
+                ctx.arc(150, 150, 150, arc * i, arc * (i + 1));
+                ctx.lineTo(150, 150);
+                ctx.fill();
+                ctx.save();
+                ctx.fillStyle = "white";
+                ctx.font = "14px Arial";
+                ctx.translate(150, 150);
+                ctx.rotate(arc * i + arc / 2);
+                ctx.fillText(sections[i], 80, 10);
+                ctx.restore();
+            }
+        }
+
+        function spinWheel() {
+            const randomDegree = Math.floor(3600 + Math.random() * 360);
+            currentAngle += randomDegree;
+            canvas.style.transition = "transform 3s ease-out";
+            canvas.style.transform = `rotate(${currentAngle}deg)`;
+            setTimeout(() => {
+                const winningIndex = Math.floor(((360 - (currentAngle % 360)) / (360 / sections.length)) % sections.length);
+                alert("You won: " + sections[winningIndex]);
+            }, 3000);
+        }
+
+        drawWheel();
+    </script>
+</body>
+</html>
